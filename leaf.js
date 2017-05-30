@@ -16,43 +16,47 @@ BinarySpaceTree - Simple Binary Space Tree in JavaScript
 
 
 var Leafs = {
-  vertical: class LeafVert {
-    constructor(width,height) {
-      this.isVert = 1;
+  horizontal: class LeafHor {
+    constructor(x,y,width,height) {
+      this.isVert = 0;
       this.WIDTH = width;
       this.HEIGHT = height;
-      this.Y = height >> 1; 
+        this.X = x;
+        this.Y = y;
+      this.DIV = height >> 1; 
       this.TOP;
       this.BOTTOM;
       this.OBJ = [];
     }
     getChild(minx,miny,maxx,maxy) {
-      if (miny > this.Y) return this.BOTTOM;
+      if (miny > this.DIV) return this.BOTTOM;
       
-      if (maxy < this.Y) return this.TOP;
+      if (maxy < this.DIV) return this.TOP;
       
       return -1;
       
     }
       split() {
-          
+          this.TOP = new Leafs.vertical()
       }
     
   },
-  horizontal: class LeafHor {
-    constructor(width,height) {
-      this.isVert = 0;
+  vertical: class LeafVert {
+    constructor(x,y,width,height) {
+      this.isVert = 1;
       this.WIDTH = width;
       this.HEIGHT = height;
-      this.X = width >> 1;
+        this.X = x;
+        this.Y = y;
+      this.DIV = width >> 1;
       this.LEFT;
       this.RIGHT;
       this.OBJ = [];
     }
      getChild(minx,miny,maxx,maxy) {
-      if (minx > this.X) return this.RIGHT;
+      if (minx > this.DIV) return this.RIGHT;
       
-      if (maxx < this.X) return this.LEFT;
+      if (maxx < this.DIV) return this.LEFT;
       
       return -1;
       
