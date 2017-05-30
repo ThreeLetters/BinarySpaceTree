@@ -23,7 +23,7 @@ module.exports = class Tree {
     this.HEIGHT = height;
     this.MAXOBJ = maxObj || 2;
     this.MAXLVL = maxLvL || 20;
-    this.ROOT = new leaf.vertical(width,height)
+    this.ROOT = new leaf.vertical(0,0,width,height)
   }
   insert(obj) {
      var minx = obj.bounds.minX,
