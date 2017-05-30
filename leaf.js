@@ -17,9 +17,11 @@ BinarySpaceTree - Simple Binary Space Tree in JavaScript
 
 var Leafs = {
   vertical: class LeafVert {
-    constructor(y) {
-     this.isVert = 1;
-     this.Y = y; 
+    constructor(width,height) {
+      this.isVert = 1;
+      this.WIDTH = width;
+      this.HEIGHT = height;
+      this.Y = height >> 1; 
       this.TOP;
       this.BOTTOM;
       this.OBJ = [];
@@ -32,12 +34,17 @@ var Leafs = {
       return -1;
       
     }
+      split() {
+          
+      }
     
   },
   horizontal: class LeafHor {
-    constructor(x) {
+    constructor(width,height) {
       this.isVert = 0;
-      this.X = x;
+      this.WIDTH = width;
+      this.HEIGHT = height;
+      this.X = width >> 1;
       this.LEFT;
       this.RIGHT;
       this.OBJ = [];
