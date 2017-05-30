@@ -19,23 +19,59 @@ BinarySpaceTree - Simple Binary Space Tree in JavaScript
 var Leafs = require('./leaf.js')
 
 module.exports = class Tree {
-    constructor(width, height, maxObj, maxLvL) {
-        this.WIDTH = width;
-        this.HEIGHT = height;
-        this.MAXOBJ = maxObj || 4;
-        this.MAXLVL = maxLvL || 20;
-        this.ROOT = new Leafs.vertical(0, 0, width, height, 0)
-    }
-    insert(obj) {
-        if (obj._LEAF) {
-            throw "ERR: OBJ already in a LEAF.";
+        constructor(width, height, maxObj, maxLvL) {
+            this.WIDTH = width;
+            this.HEIGHT = height;
+            this.MAXOBJ = maxObj || 4;
+            this.MAXLVL = maxLvL || 20;
+            this.ROOT = new Leafs.vertical(0, 0, width, height, 0)
         }
-        return this.ROOT.insert(obj, this.ROOT);
-    }
-    delete(obj) {
-        if (!obj._LEAF) throw "ERR: OBJ is not in a LEAF";
-        var index = obj._LEAF.OBJ.indexOf(obj);
-        obj._LEAF.OBJ.splice(index, 1);
-        obj._LEAF = null;
-    }
-}
+        insert(obj) {
+            if (obj._LEAF) {
+                throw "ERR: OBJ already in a LEAF.";
+            }
+            return this.ROOT.insert(obj, this.ROOT);
+        }
+        delete(obj) {
+            if (!obj._LEAF) throw "ERR: OBJ is not in a LEAF";
+            var index = obj._LEAF.OBJ.indexOf(obj);
+            obj._LEAF.OBJ.splice(index, 1);
+            obj._LEAF = null;
+        }
+        forEach(bounds, call) {
+            var current = this.ROOT;
+            var minx = bounds.minX,
+                miny = bounds.minY,
+                maxx = bounds.maxX,
+                maxy = bounds.maxY;
+            while (true) {
+                var child = current.getChild(minx, miny, maxx, maxy);
+                if (child == -1 || !child) {
+                    return current.forEach(call);
+                } else {
+                    child.OBJ.forEach(call);
+                    current = child;
+                }
+            }
+
+        }
+        every(bounds, call) {
+            var current = this.ROOT;
+            var minx = bounds.minX,
+                miny = bounds.minY,
+                maxx = bounds.maxX,
+                maxy = bounds.maxY;
+            while (true) {
+                var child = current.getChild(minx, miny, maxx, maxy);
+                if (child == -1 || !child) {
+                    return current.every(call);
+                } else {
+                    if (!child.OBJ.every(call)) return false;
+                    current = child;
+                }
+            }
+
+        }
+        forEachPrecise(bounds, call) {
+            this.ROOT.forEachPrecise(bounds, call)
+        }

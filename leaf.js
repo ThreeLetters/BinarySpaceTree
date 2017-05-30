@@ -32,7 +32,7 @@ var insert = function (obj, leaf) {
     }
 
     if (!insertTo) {
-        if (this.OBJ.length > MAXOBJ) {
+        if (leaf.OBJ.length > MAXOBJ) {
             leaf.split();
             return insert(obj, leaf);
         } else {
@@ -44,9 +44,43 @@ var insert = function (obj, leaf) {
     return insert(obj, insertTo);
 }
 
-var Leafs = {
+var forEachPrecise = function (bounds, leaf, call) {
+    if (!checkIntersect(bounds, leaf.bounds)) {
+        return;
+    }
+    leaf.OBJ.forEach(call);
+    if (leaf.LEFT) {
+        forEachPrecise(bounds, leaf.LEFT, call);
+        forEachPrecise(bounds, leaf.RIGHT, call);
+    } else if (leaf.TOP) {
+        forEachPrecise(bounds, leaf.TOP, call);
+        forEachPrecise(bounds, leaf.BOTTOM, call);
+    }
+
+
+}
+var everyPrecise = function (bounds, leaf, call) {
+    if (!checkIntersect(bounds, leaf.bounds)) {
+        return;
+    }
+    if (!leaf.OBJ.every(call)) return false;
+    if (leaf.LEFT) {
+        if (!everyPrecise(bounds, leaf.LEFT, call)) return false;
+        return everyPrecise(bounds, leaf.RIGHT, call)
+    } else if (leaf.TOP) {
+        if (!everyPrecise(bounds, leaf.TOP, call)) return false;
+        return everyPrecise(bounds, leaf.BOTTOM, call);
+    }
+    return true;
+
+}
+var checkIntersect = function (bounds, bounds2) {
+    return !(bounds2.minX > bounds.maxX || bounds2.maxX < bounds.minX || bounds2.minY > bounds.maxY || bounds2.maxY < bounds.minX)
+}
+
+module.exports = {
     horizontal: class LeafHor {
-        constructor(x, y, width, height, lvl) {
+        constructor(x, y, width, height, lvl, parent) {
             this.isVert = 0;
             this.LVL = lvl;
             this.WIDTH = width;
@@ -54,10 +88,19 @@ var Leafs = {
             this.X = x;
             this.Y = y;
             this.DIV = y + (height >> 1);
+            this.PARENT = parent;
             this.TOP;
             this.BOTTOM;
             this.OBJ = [];
             this.insert = insert;
+            this.forEachPrecise = forEachPrecise;
+            this.bounds = {
+                minX: x,
+                minY: y,
+                maxX: x + width,
+                maxY: y + height
+            }
+            this.everyPrecise = everyPrecise;
         }
         getChild(minx, miny, maxx, maxy) {
             if (miny > this.DIV) return this.BOTTOM;
@@ -68,18 +111,20 @@ var Leafs = {
 
         }
         split() {
-            this.TOP = new Leafs.vertical(this.X, this.Y, this.WIDTH, this.HEIGHT >> 1, this.LVL + 1);
-            this.BOTTOM = new Leafs.vertical(this.X, this.DIV, this.WIDTH, this.HEIGHT >> 1, this.LVL + 1);
+            this.TOP = new Leafs.vertical(this.X, this.Y, this.WIDTH, this.HEIGHT >> 1, this.LVL + 1, this);
+            this.BOTTOM = new Leafs.vertical(this.X, this.DIV, this.WIDTH, this.HEIGHT >> 1, this.LVL + 1, this);
+            var len = this.OBJ.length
             this.OBJ.forEach((obj) => {
                 insert(obj, this);
             })
+            this.OBJ = this.OBJ.slice(len)
 
 
         }
 
     },
     vertical: class LeafVert {
-        constructor(x, y, width, height, lvl) {
+        constructor(x, y, width, height, lvl, parent) {
             this.isVert = 1;
             this.LVL = lvl;
             this.WIDTH = width;
@@ -87,10 +132,19 @@ var Leafs = {
             this.X = x;
             this.Y = y;
             this.DIV = x + (width >> 1);
+            this.PARENT = parent;
             this.LEFT;
             this.RIGHT;
             this.OBJ = [];
             this.insert = insert;
+            this.forEachPrecise = forEachPrecise;
+            this.bounds = {
+                minX: x,
+                minY: y,
+                maxX: x + width,
+                maxY: y + height
+            }
+            this.everyPrecise = everyPrecise;
         }
         getChild(minx, miny, maxx, maxy) {
             if (minx > this.DIV) return this.RIGHT;
@@ -101,11 +155,13 @@ var Leafs = {
 
         }
         split() {
-            this.LEFT = new Leafs.horizontal(this.X, this.Y, this.WIDTH >> 1, this.HEIGHT, this.LVL + 1);
-            this.RIGHT = new Leafs.horizontal(this.DIV, this.Y, this.WIDTH >> 1, this.HEIGHT, this.LVL + 1);
+            this.LEFT = new Leafs.horizontal(this.X, this.Y, this.WIDTH >> 1, this.HEIGHT, this.LVL + 1, this);
+            this.RIGHT = new Leafs.horizontal(this.DIV, this.Y, this.WIDTH >> 1, this.HEIGHT, this.LVL + 1, this);
+            var len = this.OBJ.length;
             this.OBJ.forEach((obj) => {
                 insert(obj, this);
             })
+            this.OBJ = this.OBJ.slice(len)
         }
 
 
