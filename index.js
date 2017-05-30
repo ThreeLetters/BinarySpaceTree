@@ -16,29 +16,26 @@ BinarySpaceTree - Simple Binary Space Tree in JavaScript
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+var Leafs = require('./leaf.js')
 
 module.exports = class Tree {
-  constructor(width,height,maxObj,maxLvL) {
-    this.WIDTH = width;
-    this.HEIGHT = height;
-    this.MAXOBJ = maxObj || 2;
-    this.MAXLVL = maxLvL || 20;
-    this.ROOT = new leaf.vertical(0,0,width,height)
-  }
-  insert(obj) {
-     var minx = obj.bounds.minX,
-         miny = obj.bounds.minY,
-         maxx = obj.bounds.maxX,
-         maxy = obj.bounds.maxY;
-      
-      
-  }
-  
-  
-  
-  
-  
-  
-  
-  
+    constructor(width, height, maxObj, maxLvL) {
+        this.WIDTH = width;
+        this.HEIGHT = height;
+        this.MAXOBJ = maxObj || 4;
+        this.MAXLVL = maxLvL || 20;
+        this.ROOT = new Leafs.vertical(0, 0, width, height, 0)
+    }
+    insert(obj) {
+        if (obj._LEAF) {
+            throw "ERR: OBJ already in a LEAF.";
+        }
+        return this.ROOT.insert(obj, this.ROOT);
+    }
+    delete(obj) {
+        if (!obj._LEAF) throw "ERR: OBJ is not in a LEAF";
+        var index = obj._LEAF.OBJ.indexOf(obj);
+        obj._LEAF.OBJ.splice(index, 1);
+        obj._LEAF = null;
+    }
 }
