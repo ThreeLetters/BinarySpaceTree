@@ -24,7 +24,14 @@ module.exports = class Tree {
     this.MAXOBJ = maxObj || 2;
     this.MAXLVL = maxLvL || 20;
   }
-  
+  insert(obj) {
+     var minx = obj.bounds.minX,
+         miny = obj.bounds.minY,
+         maxx = obj.bounds.maxX,
+         maxy = obj.bounds.maxY;
+      
+      
+  }
   
   
   
