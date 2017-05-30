@@ -23,7 +23,7 @@ var Leafs = {
       this.HEIGHT = height;
         this.X = x;
         this.Y = y;
-      this.DIV = height >> 1; 
+      this.DIV = y + (height >> 1); 
       this.TOP;
       this.BOTTOM;
       this.OBJ = [];
@@ -37,7 +37,13 @@ var Leafs = {
       
     }
       split() {
-          this.TOP = new Leafs.vertical()
+          this.TOP = new Leafs.vertical(this.X,this.Y,this.WIDTH,this.HEIGHT >> 1);
+          this.BOTTOM = new Leafs.vertical(this.X,this.DIV,this.WIDTH,this.HEIGHT >> 1);
+          this.OBJ.forEach((obj)=>{
+           insert(obj,this);
+          })
+          
+          
       }
     
   },
@@ -48,7 +54,7 @@ var Leafs = {
       this.HEIGHT = height;
         this.X = x;
         this.Y = y;
-      this.DIV = width >> 1;
+      this.DIV = x + (width >> 1);
       this.LEFT;
       this.RIGHT;
       this.OBJ = [];
@@ -61,6 +67,13 @@ var Leafs = {
       return -1;
       
     }
+        split() {
+          this.LEFT = new Leafs.horizontal(this.X,this.Y,this.WIDTH >> 1,this.HEIGHT);
+          this.RIGHT = new Leafs.horizontal(this.DIV,this.Y,this.WIDTH >> 1,this.HEIGHT);
+          this.OBJ.forEach((obj)=>{
+           insert(obj,this);
+          })
+      }
     
     
   }
