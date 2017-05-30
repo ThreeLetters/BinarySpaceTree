@@ -7,7 +7,14 @@ var Leafs = {
       this.BOTTOM;
       this.OBJ = [];
     }
-    
+    getChild(minx,miny,maxx,maxy) {
+      if (miny > this.Y) return this.BOTTOM;
+      
+      if (maxy < this.Y) return this.TOP;
+      
+      return -1;
+      
+    }
     
   },
   horizontal: class LeafHor {
@@ -18,7 +25,14 @@ var Leafs = {
       this.RIGHT;
       this.OBJ = [];
     }
-    
+     getChild(minx,miny,maxx,maxy) {
+      if (minx > this.X) return this.RIGHT;
+      
+      if (maxx < this.X) return this.LEFT;
+      
+      return -1;
+      
+    }
     
     
   }
